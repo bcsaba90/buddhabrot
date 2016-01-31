@@ -2,17 +2,30 @@
 #define DATABASE_H
 #include <string>
 #include <fstream>
-#include <set>
+#include <unordered_set>
 #include <random>
 #include "complex.h"
 
+namespace std {
+	template <>
+	struct hash<Complex>
+	{
+		std::size_t operator()(const Complex& complex) const
+		{
+		  return (std::hash<double>()(complex.real) ^ (std::hash<double>()(complex.imaginary) << 1));
+		}
+	};
+}
+
 class Database {
 	std::fstream stream;
-	std::set<Complex> points;
-	std::set<Complex>::iterator iterator;
+	std::unordered_set<Complex> points;
+	std::unordered_set<Complex>::iterator iterator;
+	std::unordered_set<Complex> newPoints;
 	bool hasNextEntryInFile();
 	Complex readNextEntryFromFile();
 	void moveIterator(int number);
+	void writeToFile();
 	public:
 		Database(const std::string& fileName);
 		~Database();

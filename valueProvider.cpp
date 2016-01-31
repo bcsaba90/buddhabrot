@@ -5,7 +5,7 @@
 const int MAX_NUMBER_OF_TRIES = 100;
 const int ITERATION_COUNT_TO_CONSIDER_INTERESTING = 2000;
 const int ITERATION_COUNT_NEEDED_FOR_SAVE = 1000;
-const double QUADRANT_SIZE = 0.02;
+const double QUADRANT_SIZE = 0.01;
 const int MINIMUM_AMOUNT_OF_RANDOM_QUADRANT_BEFORE_USE = 10;
 
 ValueProvider::ValueProvider(Database* database, FractalParams& params_p) : params(params_p) {
@@ -16,7 +16,6 @@ ValueProvider::ValueProvider(Database* database, FractalParams& params_p) : para
 
 ValueProvider::~ValueProvider() {
 	std::cout << "interestingQuadrants: " << interestingQuadrants.size() << std::endl;
-	std::cout << "Number of points saved: " << database->getSize() << std::endl;
 }
 
 inline double ValueProvider::randomDoubleInRange(double min, double max) {
@@ -32,8 +31,8 @@ bool ValueProvider::isSurelyPartOfMandelbrot(const Complex& c) {
 Complex ValueProvider::chooseCoordinate() {
 	if ((double)rand() / RAND_MAX < params.randomChance && interestingQuadrants.size() > MINIMUM_AMOUNT_OF_RANDOM_QUADRANT_BEFORE_USE) {
 		IntCoordinate interestingQuadrantCoordinate = interestingQuadrants[rand() % interestingQuadrants.size()];
-		double real      = randomDoubleInRange(interestingQuadrantCoordinate.x * QUADRANT_SIZE, QUADRANT_SIZE);
-		double imaginary = randomDoubleInRange(interestingQuadrantCoordinate.y * QUADRANT_SIZE, QUADRANT_SIZE);
+		double real      = randomDoubleInRange(interestingQuadrantCoordinate.x * QUADRANT_SIZE, interestingQuadrantCoordinate.x * QUADRANT_SIZE + QUADRANT_SIZE);
+		double imaginary = randomDoubleInRange(interestingQuadrantCoordinate.y * QUADRANT_SIZE, interestingQuadrantCoordinate.y * QUADRANT_SIZE + QUADRANT_SIZE);
 		return Complex(real, imaginary);
 	} else {
 		double real      = randomDoubleInRange(params.minX, params.maxX);

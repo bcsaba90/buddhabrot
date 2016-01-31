@@ -12,7 +12,7 @@ Fractal::Fractal(ValueProvider* valueProvider, const FractalParams& params) {
 	this->valueProvider = valueProvider;
 }
 
-inline void Fractal::increaseValueAt(long** image, const Complex& complex) {
+inline void Fractal::increaseValueAt(int** image, const Complex& complex) {
 	int x = NumericHelper::map(complex.getReal(), params.minX, params.maxX, 0, params.width);
 	int y = NumericHelper::map(complex.getImaginary(), params.minY, params.maxY, 0, params.height);
 	if (x >= 0 && x < params.width && y >= 0 && y < params.height) {
@@ -20,11 +20,11 @@ inline void Fractal::increaseValueAt(long** image, const Complex& complex) {
 	}
 }
 
-long** Fractal::drawInternal(int index, long long iterationLimit, long long iterationCount, long long minIterationCount) {
+int** Fractal::drawInternal(int index, long long iterationLimit, long long iterationCount, long long minIterationCount) {
 	valueProvider->reset(index);
-	long** image = new long*[params.height];
+	int** image = new int*[params.height];
 	for (int i = 0; i < params.height; ++i) {
-		image[i] = new long[params.width];
+		image[i] = new int[params.width];
 		for (int j = 0; j < params.width; ++j) {
 			image[i][j] = 0;
 		}
@@ -57,14 +57,14 @@ long** Fractal::drawInternal(int index, long long iterationLimit, long long iter
 	return image;
 }
 
-void Fractal::deleteImage(long** image) {
+void Fractal::deleteImage(int** image) {
   for (int l = 0; l < params.height; ++l) {
 		delete[] image[l];
 	}	
 	delete[] image;
 }
 
-void Fractal::addToBmp(long** image, Bmp& bmpImage, const Vector& multiplier, double colorMultiplier) {
+void Fractal::addToBmp(int** image, Bmp& bmpImage, const Vector& multiplier, double colorMultiplier) {
 	long long count = 0;
 	long long nonZeroCount = 0;
 	for (int i = 0; i < params.height; ++i) {
@@ -91,7 +91,7 @@ void Fractal::draw() {
 	Bmp bmpImage(params.width, params.height);
 	bmpImage.fill(Vector(0,0,0));
 	for (int i = 0; i < params.colorStep.size(); ++i) {
-		long** color = drawInternal(i, params.colorStep[i].iterationLimit, params.colorStep[i].iterationCount, params.colorStep[i].minIterationCount);
+		int** color = drawInternal(i, params.colorStep[i].iterationLimit, params.colorStep[i].iterationCount, params.colorStep[i].minIterationCount);
 		addToBmp(color, bmpImage, params.colorStep[i].color, params.colorStep[i].colorMultiplier);
 		deleteImage(color);
 	}

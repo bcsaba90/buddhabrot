@@ -1,7 +1,7 @@
 # This is a test fractal file
 # Used to render buddhabrot_1453050460.bmp
-width   = 11520									# width of the image in pixels, default 1920
-height  = 6480									# height of the image in pixels, default 1080
+width   = 15360									# width of the image in pixels, default 1920
+height  = 8640									# height of the image in pixels, default 1080
 min_x   = -2.1									# Minimum real value, default -2
 max_x   = 1.1										# Maximum real value, default 2
 min_y   = -1.2									# Minimum imaginary value, default -1.8
@@ -10,7 +10,7 @@ filename = buddhabrot						# Filename, current seconds will be appended, bmp wil
 random_chance = 0.1
 # color_effect | iteration_limit | color_multiplier | iteration_count | min_iteration
 colorStep {
-	(1.0, 0.65, 0.65) | 10000    | 3 | 10000000000 | 50
-	(0.05, 1.0, 0.05) | 1000     | 3 | 10000000000 | 50
-	(0.05, 0.05, 1.0) | 100      | 3 | 10000000000 | 50
+	(1.0, 0.65, 0.65) | 10000    | 2.6 | 10000000000 | 50
+	(0.05, 1.0, 0.05) | 1000     | 2.6 | 10000000000 | 50
+	(0.05, 0.05, 1.0) | 100      | 2.6 | 10000000000 | 50
 }

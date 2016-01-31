@@ -8,10 +8,12 @@ Database::Database(const std::string& fileName) {
 		Complex c = readNextEntryFromFile();
 		points.insert(c);
 	}
+	std::cout << "Number of points loaded: " << points.size() << std::endl;
 	iterator = points.begin();
 }
 
 Database::~Database() {
+	writeToFile();
 	stream.flush();
 	stream.close();
 }
@@ -44,8 +46,14 @@ Complex Database::getNextEntry(int offset) {
 }
 
 void Database::writeEntry(const Complex& complex) {
-	if (points.find(complex) == points.end()) {
-		points.insert(complex);
+	if (points.find(complex) == points.end() && newPoints.find(complex) == newPoints.end()) {
+		newPoints.insert(complex);
+	}
+}
+
+void Database::writeToFile() {
+	for (auto it = newPoints.begin(); it != newPoints.end(); ++it) {
+		const Complex& complex = *it;
 		stream.seekp(0, std::ios_base::end);
 		stream.clear();
 		stream.write((char*)(&(complex.real)), sizeof(double));
@@ -58,7 +66,6 @@ void Database::moveIterator(int number) {
 		++iterator;
 	}
 }
-	
 	
 int Database::getSize() {
 	return points.size();
