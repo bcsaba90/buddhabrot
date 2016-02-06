@@ -3,7 +3,6 @@
 #include <algorithm>
 
 const int MAX_NUMBER_OF_TRIES = 100;
-const int ITERATION_COUNT_TO_CONSIDER_INTERESTING = 2000;
 const int ITERATION_COUNT_NEEDED_FOR_SAVE = 1000;
 const double QUADRANT_SIZE = 0.01;
 const int MINIMUM_AMOUNT_OF_RANDOM_QUADRANT_BEFORE_USE = 10;
@@ -80,7 +79,7 @@ void ValueProvider::lastValueSuccess(long long iterationCount) {
 	if (iterationCount > ITERATION_COUNT_NEEDED_FOR_SAVE) {
 		database->writeEntry(previousValue);
 	}
-	if (iterationCount > ITERATION_COUNT_TO_CONSIDER_INTERESTING) {
+	if (iterationCount > iterationCountToConsiderInteresting) {
 		IntCoordinate interestingQuadrant(floor(previousValue.getReal() / QUADRANT_SIZE), floor(previousValue.getImaginary() / QUADRANT_SIZE));
 		if (std::find(interestingQuadrants.begin(), interestingQuadrants.end(), interestingQuadrant) == interestingQuadrants.end()) {
 			interestingQuadrants.push_back(interestingQuadrant);

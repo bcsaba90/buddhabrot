@@ -34,9 +34,9 @@ typedef struct {
 Bmp::Bmp(int width, int height) {
 	this->width = width;
 	this->height = height;
-	image = new Vector*[height];
+	image = new Pixel*[height];
 	for (int i = 0; i < height; ++i) {
-		image[i] = new Vector[width];
+		image[i] = new Pixel[width];
 	}
 }
 
@@ -47,7 +47,7 @@ Bmp::~Bmp() {
 	delete[] image;
 }
 
-void Bmp::fill(Vector color) {
+void Bmp::fill(const Pixel& color) {
 	for (int i = 0; i < height; ++i) {
 		for (int j = 0; j < width; ++j) {
 			image[i][j] = color;
@@ -55,20 +55,18 @@ void Bmp::fill(Vector color) {
 	}
 }
 
-void Bmp::setPixel(int x, int y, Vector color) {
+void Bmp::setPixel(int x, int y, const Pixel& color) {
 	if (x < 0 || y < 0 || x >= width || y >= height) {
 		return;
 	}
 	image[y][x] = color;
 }
 
-void Bmp::addToPixel(int x, int y, Vector color) {
+void Bmp::addToPixel(int x, int y, const Pixel& color) {
 	if (x < 0 || y < 0 || x >= width || y >= height) {
 		return;
 	}
-	image[y][x] += color;
-	image[y][x].clampMax(255,255,255);
-	image[y][x].clampMin(0,0,0);
+	image[y][x].addWithClamp(color);
 }
 
 void Bmp::save(std::string fileName) {
@@ -82,9 +80,9 @@ void Bmp::save(std::string fileName) {
 	for(int i=0;i < height;i++) {
 		for(int j=0;j < width;j++)
 		{
-				out.put((char)image[i][j].getZ());
-				out.put((char)image[i][j].getY());
-				out.put((char)image[i][j].getX());
+				out.put(image[i][j].b);
+				out.put(image[i][j].g);
+				out.put(image[i][j].r);
 				out.put((char)255);
 		}
 	}

@@ -32,6 +32,22 @@ Complex& Complex::operator*=(const Complex& complex) {
 	return *this;
 }
 
+
+Complex Complex::operator/(const Complex& complex) {
+	double divisor = (complex.real*complex.real + complex.imaginary*complex.imaginary);
+	double newReal = (real * complex.real + imaginary * complex.imaginary) / divisor;
+	double newImaginary = (imaginary * complex.real - real * complex.imaginary) / divisor;
+	return Complex(newReal, newImaginary);
+}
+
+Complex& Complex::operator/=(const Complex& complex) {
+	double newReal = real * complex.real - imaginary * complex.imaginary;
+	double newImaginary = real * complex.imaginary + imaginary * complex.real;
+	this->real = newReal;
+	this->imaginary = newImaginary;
+	return *this;
+}
+
 Complex Complex::operator+(const Complex& complex) {
 	double newReal = real + complex.real;
 	double newImaginary = imaginary + complex.imaginary;

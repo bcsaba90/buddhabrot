@@ -4,4 +4,13 @@ namespace NumericHelper {
 		double mappedToUnitRange = (value - originalRangeMin) / (originalRangeMax - originalRangeMin);
 		return mappedToUnitRange * (newRangeMax - newRangeMin) + newRangeMin;
 	}
+	
+	inline bool isNumeric(const std::string& string) {
+		for (int i = 0; i < string.size(); ++i) {
+			if (string[i] < '0' || string[i] > '9') {
+				return false;
+			}
+		}
+		return true;
+	}
 }

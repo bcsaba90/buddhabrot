@@ -16,12 +16,14 @@ struct IntCoordinate {
 };
 
 class ValueProvider {
+	int iterationCountToConsiderInteresting = 100;
 	Database* database;
 	bool readAllDataFromDatabase = false;
 	Complex previousValue;
 	long long previousIterationCount;
 	bool isLastValueMirroredAlready = false;
 	bool lastValueSuccessful = false;
+	bool readOnlyFile = false;
 	FractalParams& params;
   std::vector<IntCoordinate> interestingQuadrants;
   
@@ -41,6 +43,18 @@ class ValueProvider {
 		Complex getNextValue(int index);
 		void lastValueSuccess(long long iterationCount);
 		void reset(int index);
+		void setReadOnlyFile(bool readOnlyFile) {
+			this->readOnlyFile = readOnlyFile;
+		}
+		bool hasMoreValue() {
+			if (readOnlyFile) {
+				return !readAllDataFromDatabase;
+			}
+			return true;
+		}
+		void setIterationCountToConsiderInteresting(int iterationCountToConsiderInteresting) {
+			this->iterationCountToConsiderInteresting = iterationCountToConsiderInteresting;
+		}
 };
 
 #endif

@@ -12,7 +12,9 @@ class Complex {
 		Complex(double real, double imaginary);
 		double lengthSquared();
 		Complex& operator*=(const Complex& complex);
+		Complex& operator/=(const Complex& complex);
 		Complex operator*(const Complex& complex);
+		Complex operator/(const Complex& complex);
 		Complex operator+(const Complex& complex);
 		Complex& operator+=(const Complex& complex);
 		Complex& operator=(const Complex& complex);

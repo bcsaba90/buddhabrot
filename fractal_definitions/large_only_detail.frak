@@ -7,10 +7,8 @@ max_x   = 1.1										# Maximum real value, default 2
 min_y   = -1.2									# Minimum imaginary value, default -1.8
 max_y   = 1.2										# Maximum imaginary value, default 1.8
 filename = buddhabrot						# Filename, current seconds will be appended, bmp will be generated, default buddhabrot
-random_chance = 0.85
+random_chance = 0.05
 # color_effect | iteration_limit | color_multiplier | iteration_count | min_iteration
 colorStep {
-	(1.0, 0.65, 0.65) | 5000    | 3.12 | 300000000 | 10
-	(0.05, 1.0, 0.05) | 500     | 3.12 | 300000000 | 10
-	(0.05, 0.05, 1.0) | 50      | 3.12 | 300000000 | 0
+	(0.9, 0.3, 0.1) | 1000000    | 3.6 | 500000000 | 600000
 }
