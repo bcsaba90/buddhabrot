@@ -28,7 +28,6 @@ void ArgumentParser::parse(const std::vector<std::string>& stringArgument, int& 
 			throw GeneralException(std::string("Argument '") + argumentName + "' is invalid"); 
 		}
 		Argument argument = longNameToArgument.at(argumentName);
-		std::cout << "argument: " << " " << argument.type << std::endl;
 		parsedArguments[argument.shortName] = parseArgument(stringArgument, argument.type, index);
 	} else {
 		for (int i = 1; i < currentArgument.size(); ++i) {

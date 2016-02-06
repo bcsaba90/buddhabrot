@@ -14,6 +14,7 @@ void showUsage(const std::vector<Argument>& arguments) {
 
 std::vector<Argument> createArguments() {
 	std::vector<Argument> arguments;
+	arguments.push_back(Argument('h', "help", "Display this help", BOOLEAN_ARGUMENT));
 	arguments.push_back(Argument('f', "filename", "Name of the file to render, mandatory argument", STRING_ARGUMENT));
 	arguments.push_back(Argument('d', "databasefile", "Name of the db file to use, defaults to point.ff", STRING_ARGUMENT));
 	arguments.push_back(Argument('o', "onlyfromdb", "Limit the amount of samples to the same as points in the database", BOOLEAN_ARGUMENT));
@@ -34,6 +35,10 @@ int main(int argc, char** argv) {
 		std::cout << exception.what() << std::endl;
 		showUsage(arguments);
 		return -1;
+	}
+	if (argumentParser.isArgumentPresent('h')) {
+		showUsage(arguments);
+		return 0;
 	}
 	if (!areAllMandatoryArgumentsPresent(argumentParser)) {
 		showUsage(arguments);
