@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
 	try {
 		FractalParser parser;
 		FractalParams params = parser.readFractal(argumentParser.getStringArgument('f'));
-		Database* database = new Database(argumentParser.getStringArgumentOrReturnDefault('f', "points.ff"));
+		Database* database = new Database(argumentParser.getStringArgumentOrReturnDefault('d', "points.ff"));
 		ValueProvider* valueProvider = new ValueProvider(database, params);
 		valueProvider->setIterationCountToConsiderInteresting(argumentParser.getIntArgumentOrReturnDefault('i', 100));
 		if (argumentParser.isArgumentPresent('o')) {
