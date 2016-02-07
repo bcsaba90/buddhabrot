@@ -27,6 +27,7 @@ class Database {
 	void moveIterator(int number);
 	void writeToFile();
 	public:
+		Database();
 		Database(const std::string& fileName);
 		~Database();
 		

@@ -6,7 +6,7 @@ namespace NumericHelper {
 	}
 	
 	inline bool isNumeric(const std::string& string) {
-		for (int i = 0; i < string.size(); ++i) {
+		for (unsigned int i = 0; i < string.size(); ++i) {
 			if (string[i] < '0' || string[i] > '9') {
 				return false;
 			}

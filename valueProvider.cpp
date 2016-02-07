@@ -40,13 +40,13 @@ Complex ValueProvider::chooseCoordinate() {
 	}
 }
 
-Complex ValueProvider::getNextValue(int index) {
-	previousValue = getNextValueInternal(params.colorStep.size());
+Complex ValueProvider::getNextValue(unsigned int index) {
+	previousValue = getNextValueInternal(index);
 	return previousValue;
 }
 
-Complex ValueProvider::getNextValueInternal(int index) {
-	if (!readAllDataFromDatabase) {
+Complex ValueProvider::getNextValueInternal(unsigned int index) {
+	if (!readAllDataFromDatabase && !noDb) {
 		if (database->hasMoreElement()) {
 			return database->getNextEntry(index);
 		} else {
@@ -76,7 +76,7 @@ Complex ValueProvider::getNextValueInternal(int index) {
 void ValueProvider::lastValueSuccess(long long iterationCount) {
 	lastValueSuccessful = true;
 	previousIterationCount = iterationCount;
-	if (iterationCount > ITERATION_COUNT_NEEDED_FOR_SAVE) {
+	if (iterationCount > ITERATION_COUNT_NEEDED_FOR_SAVE && !noDb) {
 		database->writeEntry(previousValue);
 	}
 	if (iterationCount > iterationCountToConsiderInteresting) {
@@ -87,6 +87,6 @@ void ValueProvider::lastValueSuccess(long long iterationCount) {
 	}
 }
 
-void ValueProvider::reset(int index) {
+void ValueProvider::reset(unsigned int index) {
 	database->reset(index);
 }

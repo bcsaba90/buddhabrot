@@ -18,6 +18,7 @@ std::vector<Argument> createArguments() {
 	arguments.push_back(Argument('f', "filename", "Name of the file to render, mandatory argument", STRING_ARGUMENT));
 	arguments.push_back(Argument('d', "databasefile", "Name of the db file to use, defaults to point.ff", STRING_ARGUMENT));
 	arguments.push_back(Argument('o', "onlyfromdb", "Limit the amount of samples to the same as points in the database", BOOLEAN_ARGUMENT));
+	arguments.push_back(Argument('b', "nodb", "Dpn't read or write to db", BOOLEAN_ARGUMENT));
 	arguments.push_back(Argument('i', "interesting-iteration-count", "Iteration count to consider interesting, defaults to 100", INTEGER_ARGUMENT));
 	return arguments;
 }
@@ -47,11 +48,19 @@ int main(int argc, char** argv) {
 	try {
 		FractalParser parser;
 		FractalParams params = parser.readFractal(argumentParser.getStringArgument('f'));
-		Database* database = new Database(argumentParser.getStringArgumentOrReturnDefault('d', "points.ff"));
+		Database* database;
+		if (argumentParser.isArgumentPresent('b')) {
+			database = new Database();
+		} else {
+			database = new Database(argumentParser.getStringArgumentOrReturnDefault('d', "points.ff"));
+		}
 		ValueProvider* valueProvider = new ValueProvider(database, params);
 		valueProvider->setIterationCountToConsiderInteresting(argumentParser.getIntArgumentOrReturnDefault('i', 100));
 		if (argumentParser.isArgumentPresent('o')) {
 			valueProvider->setReadOnlyFile(true);
+		}
+		if (argumentParser.isArgumentPresent('b')) {
+			valueProvider->setNoDb(true);
 		}
 		Fractal fractal(valueProvider, params);
 		fractal.draw();

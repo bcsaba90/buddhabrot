@@ -23,7 +23,7 @@ std::vector<std::string> FractalParser::readAllLinesFromFile(const std::string& 
 }
 
 std::vector<std::string>& FractalParser::removeCommentsAndWhitespaces(std::vector<std::string>& lines) {
-	for (int i = 0; i < lines.size(); ++i) {
+	for (unsigned int i = 0; i < lines.size(); ++i) {
 		std::string line = lines[i];
 		line = line.substr(0, line.find("#"));
 		
@@ -40,7 +40,7 @@ std::vector<std::string>& FractalParser::removeCommentsAndWhitespaces(std::vecto
 std::map<std::string, std::string> FractalParser::parseProperties(const std::vector<std::string>& lines) {
 	std::map<std::string, std::string> result;
 	
-	for (int i = 0; i < lines.size(); ++i) {
+	for (unsigned int i = 0; i < lines.size(); ++i) {
 		const std::string& line = lines[i];
 		size_t equalPosition = line.find("=");
 		if (equalPosition != std::string::npos) {
@@ -53,7 +53,7 @@ std::map<std::string, std::string> FractalParser::parseProperties(const std::vec
 
 long long parseLong(const std::string& stringToConvert) {
 			long long result = 0;
-			for (int i = 0; i < stringToConvert.size(); ++i) {
+			for (unsigned int i = 0; i < stringToConvert.size(); ++i) {
 				result *= 10;
 				result += (stringToConvert[i] - '0');
 			}
@@ -131,13 +131,13 @@ std::vector<std::string> split(const std::string& str, char c)  {
 
 std::vector<ColorStep> FractalParser::parseColors(const std::vector<std::string>& lines) {
 	std::vector<ColorStep> result;
-	int startLine = 0;
+	unsigned int startLine = 0;
 	for (startLine = 0; startLine < lines.size(); ++startLine) {
 		if (lines[startLine].find("colorStep") == 0) {
 			break;
 		}
 	}
-	int i = startLine + 1;
+	unsigned int i = startLine + 1;
 	// parses (x,y,z) d d d 
 	while (i < lines.size() && lines[i].find("}") == std::string::npos) {
 		std::vector<std::string> parts = split(lines[i], '|');

@@ -12,12 +12,12 @@ void ArgumentParser::parse(int argc, char** argv, const std::vector<Argument>& a
 	for (int i = 1; i < argc; ++i) {
 		commandLineArguments.push_back(std::string(argv[i]));
 	}
-	for (int i = 0; i < commandLineArguments.size(); ++i) {
+	for (unsigned int i = 0; i < commandLineArguments.size(); ++i) {
 		parse(commandLineArguments, i);
 	}
 }
 
-void ArgumentParser::parse(const std::vector<std::string>& stringArgument, int& index) {
+void ArgumentParser::parse(const std::vector<std::string>& stringArgument, unsigned int& index) {
 	std::string currentArgument = stringArgument[index];
 	if (currentArgument.length() < 1 || currentArgument[0] != '-') {
 		throw GeneralException("Argument can only start with '-'");
@@ -30,7 +30,7 @@ void ArgumentParser::parse(const std::vector<std::string>& stringArgument, int& 
 		Argument argument = longNameToArgument.at(argumentName);
 		parsedArguments[argument.shortName] = parseArgument(stringArgument, argument.type, index);
 	} else {
-		for (int i = 1; i < currentArgument.size(); ++i) {
+		for (unsigned int i = 1; i < currentArgument.size(); ++i) {
 			if (shortNameToArgument.find(currentArgument[i]) == shortNameToArgument.end()) {
 				throw GeneralException(std::string("Argument '") + currentArgument[i] + "' is invalid"); 
 			}
@@ -43,7 +43,7 @@ void ArgumentParser::parse(const std::vector<std::string>& stringArgument, int& 
 	}
 }
 
-std::string ArgumentParser::parseArgument(const std::vector<std::string>& stringArgument, const ArgumentType type, int& index) {
+std::string ArgumentParser::parseArgument(const std::vector<std::string>& stringArgument, const ArgumentType type, unsigned int& index) {
 	if (type == BOOLEAN_ARGUMENT) {
 		return "1";
 	}

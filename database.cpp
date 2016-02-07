@@ -2,6 +2,10 @@
 #include "complex.h"
 #include <iostream>
 
+Database::Database() {
+	
+}
+
 Database::Database(const std::string& fileName) {
 	stream.open(fileName, std::ios::binary | std::ios::in | std::ios::out | std::fstream::out | std::ios::app);
 	while (hasNextEntryInFile()) {
@@ -14,8 +18,10 @@ Database::Database(const std::string& fileName) {
 
 Database::~Database() {
 	writeToFile();
-	stream.flush();
-	stream.close();
+	if (stream.is_open()) {
+		stream.flush();
+		stream.close();
+	}
 }
 
 void Database::reset(int offset) {

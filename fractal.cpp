@@ -22,7 +22,7 @@ inline void Fractal::increaseValueAt(int** image, const Complex& complex) {
 	}
 }
 
-int** Fractal::drawInternal(int index, long long iterationLimit, long long iterationCount, long long minIterationCount) {
+int** Fractal::drawInternal(unsigned int index, long long iterationLimit, long long iterationCount, long long minIterationCount) {
 	valueProvider->reset(index);
 	int** image = new int*[params.height];
 	for (int i = 0; i < params.height; ++i) {
@@ -36,7 +36,7 @@ int** Fractal::drawInternal(int index, long long iterationLimit, long long itera
 	Complex c;
 	Complex z(0,0);
 	for (long long i = 0; i < iterationCount && valueProvider->hasMoreValue(); ++i) {
-		c = valueProvider->getNextValue(index);
+		c = valueProvider->getNextValue(params.colorStep.size());
 		z.set(0,0);
 		long long k = 0;
 		while (k < iterationLimit && z.lengthSquared() <  4.0) {
@@ -92,7 +92,7 @@ void Fractal::addToBmp(int** image, Bmp& bmpImage, const Vector& multiplier, dou
 void Fractal::draw() {
 	Bmp bmpImage(params.width, params.height);
 	bmpImage.fill(Pixel(0,0,0));
-	for (int i = 0; i < params.colorStep.size(); ++i) {
+	for (unsigned int i = 0; i < params.colorStep.size(); ++i) {
 		int** color = drawInternal(i, params.colorStep[i].iterationLimit, params.colorStep[i].iterationCount, params.colorStep[i].minIterationCount);
 		addToBmp(color, bmpImage, params.colorStep[i].color, params.colorStep[i].colorMultiplier);
 		deleteImage(color);

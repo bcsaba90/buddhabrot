@@ -35,8 +35,8 @@ class ArgumentParser {
 	std::map<char, std::string> parsedArguments;
 	std::map<char, Argument> shortNameToArgument;
 	std::map<std::string, Argument> longNameToArgument;
-	void parse(const std::vector<std::string>& stringArgument, int& index);
-	std::string parseArgument(const std::vector<std::string>& stringArgument, const ArgumentType type, int& index);
+	void parse(const std::vector<std::string>& stringArgument, unsigned int& index);
+	std::string parseArgument(const std::vector<std::string>& stringArgument, const ArgumentType type, unsigned int& index);
 public:
 	void parse(int argc, char** argv, const std::vector<Argument>& argument);
 	

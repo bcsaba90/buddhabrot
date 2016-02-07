@@ -24,6 +24,7 @@ class ValueProvider {
 	bool isLastValueMirroredAlready = false;
 	bool lastValueSuccessful = false;
 	bool readOnlyFile = false;
+	bool noDb = false;
 	FractalParams& params;
   std::vector<IntCoordinate> interestingQuadrants;
   
@@ -32,7 +33,7 @@ class ValueProvider {
   std::uniform_real_distribution<double>* randomDistribution;
   
 	Complex chooseCoordinate();
-	Complex getNextValueInternal(int index);
+	Complex getNextValueInternal(unsigned int index);
 	bool isSurelyPartOfMandelbrot(const Complex& c);
 	double randomDoubleInRange(double min, double max);
 	
@@ -40,9 +41,9 @@ class ValueProvider {
 		ValueProvider(Database* database, FractalParams& params);
 		~ValueProvider();
 		
-		Complex getNextValue(int index);
+		Complex getNextValue(unsigned int index);
 		void lastValueSuccess(long long iterationCount);
-		void reset(int index);
+		void reset(unsigned int index);
 		void setReadOnlyFile(bool readOnlyFile) {
 			this->readOnlyFile = readOnlyFile;
 		}
@@ -54,6 +55,9 @@ class ValueProvider {
 		}
 		void setIterationCountToConsiderInteresting(int iterationCountToConsiderInteresting) {
 			this->iterationCountToConsiderInteresting = iterationCountToConsiderInteresting;
+		}
+		void setNoDb(bool noDb) {
+			this->noDb = noDb;
 		}
 };
 
