@@ -21,6 +21,7 @@ struct FractalParams {
 	double minY, maxY;
 	double minX, maxX;
 	double randomChance;
+	double startPower, endPower, increment;
 	std::string fileName;
 };
 #endif

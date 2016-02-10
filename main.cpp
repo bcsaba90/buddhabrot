@@ -6,7 +6,7 @@
 #include "argumentParser.h"
 
 void showUsage(const std::vector<Argument>& arguments) {
-	std::cout << "Fractal drawing program in C++\nUsage:\n./programName [arguments] -f fileToParse.frak\nFor example:\n./a.out -f \"./fractal_definitions/definition.frak\"\n\n\nOPTIONS:\n" << std::endl;
+	std::cout << "Fractal drawing program in C++\nUsage:\n./programName [arguments] -f fileToParse.frak\nFor example:\n./a.out -f \"./fractal_definitions/definition.frak\"\n\n\nOPTIONS:" << std::endl;
 	for (Argument argument : arguments) {
 		std::cout << "  -" << argument.shortName << ", --" << argument.longName << "\t\t" << argument.description << std::endl;
 	}
@@ -18,7 +18,7 @@ std::vector<Argument> createArguments() {
 	arguments.push_back(Argument('f', "filename", "Name of the file to render, mandatory argument", STRING_ARGUMENT));
 	arguments.push_back(Argument('d', "databasefile", "Name of the db file to use, defaults to point.ff", STRING_ARGUMENT));
 	arguments.push_back(Argument('o', "onlyfromdb", "Limit the amount of samples to the same as points in the database", BOOLEAN_ARGUMENT));
-	arguments.push_back(Argument('b', "nodb", "Dpn't read or write to db", BOOLEAN_ARGUMENT));
+	arguments.push_back(Argument('b', "nodb", "Don't read or write to db", BOOLEAN_ARGUMENT));
 	arguments.push_back(Argument('i', "interesting-iteration-count", "Iteration count to consider interesting, defaults to 100", INTEGER_ARGUMENT));
 	return arguments;
 }
@@ -62,8 +62,11 @@ int main(int argc, char** argv) {
 		if (argumentParser.isArgumentPresent('b')) {
 			valueProvider->setNoDb(true);
 		}
-		Fractal fractal(valueProvider, params);
-		fractal.draw();
+		for (double d = params.startPower; d <= params.endPower; d+= params.increment) {
+			valueProvider->deleteSavedValues();
+			Fractal fractal(valueProvider, params);
+			fractal.draw(d);
+		}
 		delete database;
 		delete valueProvider;
 	} catch(const GeneralException& ex) {

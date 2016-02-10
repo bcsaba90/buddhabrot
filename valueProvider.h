@@ -43,6 +43,7 @@ class ValueProvider {
 		
 		Complex getNextValue(unsigned int index);
 		void lastValueSuccess(long long iterationCount);
+		void deleteSavedValues();
 		void reset(unsigned int index);
 		void setReadOnlyFile(bool readOnlyFile) {
 			this->readOnlyFile = readOnlyFile;

@@ -90,3 +90,7 @@ void ValueProvider::lastValueSuccess(long long iterationCount) {
 void ValueProvider::reset(unsigned int index) {
 	database->reset(index);
 }
+
+void ValueProvider::deleteSavedValues() {
+	interestingQuadrants.clear();
+}

@@ -173,6 +173,9 @@ FractalParams FractalParser::readFractal(std::string fileName) {
 	result.maxX = parsePropertyToDouble(properties, "max_x", 2);
 	result.minY = parsePropertyToDouble(properties, "min_y", -1.8);
 	result.maxY = parsePropertyToDouble(properties, "max_y", 1.8);
+	result.startPower = parsePropertyToDouble(properties, "startPower", 2.0);
+	result.endPower = parsePropertyToDouble(properties, "endPower", result.startPower);
+	result.increment = parsePropertyToDouble(properties, "increment", 0.01);
 	result.fileName = parsePropertyToString(properties, "filename", "buddhabrot");
 	std::vector<ColorStep> colors = parseColors(lines);
 	result.colorStep = colors;

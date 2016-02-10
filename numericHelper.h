@@ -1,5 +1,8 @@
+#include <cmath>
 
 namespace NumericHelper {
+	const double DELTA = 0.00001;
+	
 	inline static double map(double value, double originalRangeMin, double originalRangeMax, double newRangeMin, double newRangeMax) {
 		double mappedToUnitRange = (value - originalRangeMin) / (originalRangeMax - originalRangeMin);
 		return mappedToUnitRange * (newRangeMax - newRangeMin) + newRangeMin;
@@ -12,5 +15,13 @@ namespace NumericHelper {
 			}
 		}
 		return true;
+	}
+	
+	inline bool equalsTo(double numberToCheck, int with) {
+		return fabs(numberToCheck - with) < DELTA;
+	}
+	
+	inline bool isIntegerNumber(double numberToCheck) {
+		return fabs(numberToCheck - std::round(numberToCheck)) < DELTA;
 	}
 }

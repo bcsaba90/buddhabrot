@@ -18,6 +18,14 @@ double Complex::lengthSquared() {
 	return real * real + imaginary * imaginary;
 }
 
+double Complex::length() {
+	return sqrt(lengthSquared());
+}
+
+double Complex::getAngle() {
+	return atan2(imaginary, real);
+}
+
 Complex Complex::operator*(const Complex& complex) {
 	double newReal = real * complex.real - imaginary * complex.imaginary;
 	double newImaginary = real * complex.imaginary + imaginary * complex.real;
@@ -32,6 +40,39 @@ Complex& Complex::operator*=(const Complex& complex) {
 	return *this;
 }
 
+Complex& Complex::power(double n) {
+	double r = length();
+	double theta = getAngle();
+	double rPowered = pow(r, n);
+	this->real = rPowered * cos(n * theta);
+	this->imaginary = rPowered * sin(n * theta);
+	return *this;
+}
+
+Complex& Complex::powerAndAdd(double n, const Complex& complexToAdd) {
+	double r = length();
+	double theta = getAngle();
+	double rPowered = pow(r, n);
+	this->real = rPowered * cos(n * theta) + complexToAdd.real;
+	this->imaginary = rPowered * sin(n * theta) + complexToAdd.imaginary;
+	return *this;
+}
+
+Complex& Complex::integerPower(int power) {
+	Complex result(1,0);
+	Complex& z = *this;
+	Complex value = z;
+	while (power > 0) {
+		if (power & 1) {
+			result = value * z;
+		}
+		value *= value;
+		power >>= 1;
+	}
+	this->real = result.real;
+	this->imaginary = result.imaginary;
+	return *this;
+}
 
 Complex Complex::operator/(const Complex& complex) {
 	double divisor = (complex.real*complex.real + complex.imaginary*complex.imaginary);
