@@ -57,7 +57,7 @@ int** Fractal::drawInternal(unsigned int index, long long iterationLimit, long l
 	// Could be solved with macros or dynamic linking.
 	if (NumericHelper::equalsTo(power, 2)) {
 		for (long long i = 0; i < iterationCount && valueProvider->hasMoreValue(); ++i) {
-			c = valueProvider->getNextValue(params.colorStep.size());
+			c = valueProvider->getNextValue(params.colorStep.size(), true);
 			z.set(0,0);
 			long long k = 0;
 			while (k < iterationLimit && z.lengthSquared() <  4.0) {
@@ -71,9 +71,9 @@ int** Fractal::drawInternal(unsigned int index, long long iterationLimit, long l
 			increaseValueIfNeeded(k, minIterationCount, iterationLimit, image, route);
 			logProgress(i, index, iterationCount, rangeCout);
 		}
-	} else if (NumericHelper::isIntegerNumber(power)) {
+	} else if (NumericHelper::isIntegerNumber(power) && power >= 0) {
 		for (long long i = 0; i < iterationCount && valueProvider->hasMoreValue(); ++i) {
-			c = valueProvider->getNextValue(params.colorStep.size());
+			c = valueProvider->getNextValue(params.colorStep.size(), false);
 			z.set(0,0);
 			long long k = 0;
 			while (k < iterationLimit && z.lengthSquared() <  4.0) {
@@ -87,7 +87,7 @@ int** Fractal::drawInternal(unsigned int index, long long iterationLimit, long l
 		}
 	} else {
 		for (long long i = 0; i < iterationCount && valueProvider->hasMoreValue(); ++i) {
-			c = valueProvider->getNextValue(params.colorStep.size());
+			c = valueProvider->getNextValue(params.colorStep.size(), false);
 			z.set(0,0);
 			long long k = 0;
 			while (k < iterationLimit && z.lengthSquared() <  4.0) {
@@ -106,7 +106,7 @@ int** Fractal::drawInternal(unsigned int index, long long iterationLimit, long l
 void Fractal::deleteImage(int** image) {
   for (int l = 0; l < params.height; ++l) {
 		delete[] image[l];
-	}	
+	}
 	delete[] image;
 }
 

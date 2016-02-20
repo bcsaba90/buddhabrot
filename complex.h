@@ -22,7 +22,7 @@ class Complex {
 		Complex& operator=(const Complex& complex);
 		Complex& power(double n);
 		Complex& powerAndAdd(double n, const Complex& complex);
-		Complex& integerPower(int power);
+		Complex& integerPower(unsigned int power);
 		bool operator==(const Complex& complex) const;
 		bool operator<(const Complex& complex) const;
 		friend std::ostream& operator<<(std::ostream& out, const Complex& complex);

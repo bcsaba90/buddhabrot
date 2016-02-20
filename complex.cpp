@@ -58,13 +58,16 @@ Complex& Complex::powerAndAdd(double n, const Complex& complexToAdd) {
 	return *this;
 }
 
-Complex& Complex::integerPower(int power) {
+Complex& Complex::integerPower(unsigned int power) {
+	if (power == 1) {
+		return *this;
+	}
 	Complex result(1,0);
 	Complex& z = *this;
 	Complex value = z;
 	while (power > 0) {
 		if (power & 1) {
-			result = value * z;
+			result = result * value;
 		}
 		value *= value;
 		power >>= 1;
