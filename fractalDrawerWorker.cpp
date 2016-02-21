@@ -26,9 +26,9 @@ void FractalDrawerWorker::waitUnitFinished() {
 	}
 }
 
-void FractalDrawerWorker::increaseValue(long long iterationCount, Complex* route) {
+void FractalDrawerWorker::increaseValue(long long iterationCount, Complex* route, Complex& lastNumber) {
 	resultHolder.addToResult(route, iterationCount);
-	valueProvider.lastValueSuccess(iterationCount);
+	valueProvider.lastValueSuccess(lastNumber, iterationCount);
 }
 
 void FractalDrawerWorker::increaseCountAndLogProgress(long long& countSinceLastLog) {
@@ -71,7 +71,7 @@ void FractalDrawerWorker::run() {
 					++k;
 				}
 				if (k < iterationLimit && k > minIterationCount) {
-					increaseValue(k, route);
+					increaseValue(k, route, c);
 					route = resultHolder.getTempResult();
 				}
 				increaseCountAndLogProgress(countSinceLastLog);
@@ -88,7 +88,7 @@ void FractalDrawerWorker::run() {
 					++k;
 				}
 				if (iterationCount < iterationLimit && iterationCount > minIterationCount) {
-					increaseValue(k, route);
+					increaseValue(k, route, c);
 					route = resultHolder.getTempResult();
 				}
 				increaseCountAndLogProgress(countSinceLastLog);
@@ -103,8 +103,8 @@ void FractalDrawerWorker::run() {
 					route[k].set(z);
 					++k;
 				}
-				if (iterationCount < iterationLimit && iterationCount > minIterationCount) {
-					increaseValue(k, route);
+				if (k < iterationLimit && k > minIterationCount) {
+					increaseValue(k, route, c);
 					route = resultHolder.getTempResult();
 				}
 				increaseCountAndLogProgress(countSinceLastLog);

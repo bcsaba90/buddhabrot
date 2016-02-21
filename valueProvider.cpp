@@ -3,7 +3,7 @@
 #include <algorithm>
 
 const int MAX_NUMBER_OF_TRIES = 100;
-const int MINIMUM_ITERATION_COUNT_TO_CONSIDER_INTERESTING = 20;
+const int MINIMUM_ITERATION_COUNT_TO_CONSIDER_INTERESTING = 40;
 const int ITERATION_COUNT_NEEDED_FOR_SAVE = 1000;
 const double QUADRANT_SIZE = 0.01;
 const int MINIMUM_AMOUNT_OF_RANDOM_QUADRANT_BEFORE_USE = 10;
@@ -25,9 +25,6 @@ ValueProvider::~ValueProvider() {
 		delete generators[i];
 	}
 	delete[] generators;
-	for (IntCoordinate& coordinate : interestingQuadrants) {
-		std::cout << coordinate.x << ' ' << coordinate.y << std::endl;
-	}
 	std::cout << "interestingQuadrants: " << interestingQuadrants.size() << std::endl;
 }
 
@@ -64,8 +61,7 @@ Complex ValueProvider::chooseCoordinate(unsigned int threadIndex) {
 }
 
 Complex ValueProvider::getNextValue(unsigned int index, unsigned int threadIndex, bool isMandelbrot) {
-	previousValue = getNextValueInternal(index, threadIndex, isMandelbrot);
-	return previousValue;
+	return getNextValueInternal(index, threadIndex, isMandelbrot);
 }
 
 Complex ValueProvider::getNextValueInternal(unsigned int index, unsigned int threadIndex, bool isMandelbrot) {
@@ -76,11 +72,6 @@ Complex ValueProvider::getNextValueInternal(unsigned int index, unsigned int thr
 			readAllDataFromDatabase = true;
 		}
 	}
-	if (lastValueSuccessful && !isLastValueMirroredAlready) {
-		previousValue.imaginary *= -1.0;
-		isLastValueMirroredAlready = true;
-		return previousValue;
-	}
 	int j = 0;
 	Complex choosen;
 	while (j < MAX_NUMBER_OF_TRIES) {
@@ -90,15 +81,10 @@ Complex ValueProvider::getNextValueInternal(unsigned int index, unsigned int thr
 		}
 		++j;
 	}
-	if (isLastValueMirroredAlready) {
-		isLastValueMirroredAlready = false;
-	}
 	return choosen;
 }
 
-void ValueProvider::lastValueSuccess(long long iterationCount) {
-	lastValueSuccessful = true;
-	previousIterationCount = iterationCount;
+void ValueProvider::lastValueSuccess(Complex& previousValue, long long iterationCount) {
 	if (iterationCount > ITERATION_COUNT_NEEDED_FOR_SAVE && !noDb) {
 		database->writeEntry(previousValue);
 	}
@@ -106,12 +92,10 @@ void ValueProvider::lastValueSuccess(long long iterationCount) {
 		IntCoordinate interestingQuadrant(floor(previousValue.getReal() / QUADRANT_SIZE), floor(previousValue.getImaginary() / QUADRANT_SIZE));
 		if (interestingQuadrantsSet.find(interestingQuadrant) == interestingQuadrantsSet.end()) {
 			writeInterestingQuadrantMutex.lock();
-			if (interestingQuadrantsSet.find(interestingQuadrant) == interestingQuadrantsSet.end()) {
-				isWritingInterestingQuadrant = true;
-				interestingQuadrants.push_back(interestingQuadrant);
-				isWritingInterestingQuadrant = false;
-				interestingQuadrantsSet.insert(interestingQuadrant);
-			}
+			isWritingInterestingQuadrant = true;
+			interestingQuadrants.push_back(interestingQuadrant);
+			isWritingInterestingQuadrant = false;
+			interestingQuadrantsSet.insert(interestingQuadrant);
 			writeInterestingQuadrantMutex.unlock();
 		}
 	}

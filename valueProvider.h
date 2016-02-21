@@ -35,10 +35,6 @@ class ValueProvider {
 	int iterationCountToConsiderInteresting = 100;
 	Database* database;
 	bool readAllDataFromDatabase = false;
-	Complex previousValue;
-	long long previousIterationCount;
-	bool isLastValueMirroredAlready = false;
-	bool lastValueSuccessful = false;
 	bool readOnlyFile = false;
 	bool noDb = false;
 	FractalParams& params;
@@ -60,7 +56,7 @@ class ValueProvider {
 		~ValueProvider();
 		
 		Complex getNextValue(unsigned int index, unsigned int threadIndex, bool isMandelbrot);
-		void lastValueSuccess(long long iterationCount);
+		void lastValueSuccess(Complex& lastNumber, long long iterationCount);
 		void deleteSavedValues();
 		void reset(unsigned int index);
 		void setReadOnlyFile(bool readOnlyFile) {
