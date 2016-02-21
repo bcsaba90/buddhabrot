@@ -87,7 +87,7 @@ void FractalDrawerWorker::run() {
 					route[k].set(z);
 					++k;
 				}
-				if (iterationCount < iterationLimit && iterationCount > minIterationCount) {
+				if (k < iterationLimit && k > minIterationCount) {
 					increaseValue(k, route, c);
 					route = resultHolder.getTempResult();
 				}
