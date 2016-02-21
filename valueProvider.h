@@ -4,18 +4,34 @@
 #include "complex.h"
 #include "fractalParams.h"
 #include <vector>
+#include <mutex>
+#include <unordered_set>
 
 struct IntCoordinate {
 	int x, y;
 	
 	IntCoordinate(int x_p, int y_p) : x(x_p), y(y_p){}
 	
-	bool operator==(const IntCoordinate& other) {
+	bool operator==(const IntCoordinate& other) const {
 		return x == other.x && y == other.y;
 	}
 };
 
+namespace std {
+	template <>
+	struct hash<IntCoordinate>
+	{
+		std::size_t operator()(const IntCoordinate& coordinate) const
+		{
+		  return (std::hash<int>()(coordinate.x) ^ (std::hash<int>()(coordinate.y) << 1));
+		}
+	};
+}
+
 class ValueProvider {
+	std::mutex writeInterestingQuadrantMutex;
+	bool isWritingInterestingQuadrant = false;
+	
 	int iterationCountToConsiderInteresting = 100;
 	Database* database;
 	bool readAllDataFromDatabase = false;
@@ -26,22 +42,24 @@ class ValueProvider {
 	bool readOnlyFile = false;
 	bool noDb = false;
 	FractalParams& params;
+	unsigned int numberOfThreads;
   std::vector<IntCoordinate> interestingQuadrants;
-  
-  std::random_device randomDevice;
-  std::mt19937* generator;
+	std::unordered_set<IntCoordinate> interestingQuadrantsSet;
+
+  std::mt19937** generators;
   std::uniform_real_distribution<double>* randomDistribution;
   
-	Complex chooseCoordinate();
-	Complex getNextValueInternal(unsigned int index);
+	Complex chooseCoordinate(unsigned int threadIndex);
+	Complex getNextValueInternal(unsigned int index, unsigned int threadIndex, bool isMandelbrot);
 	bool isSurelyPartOfMandelbrot(const Complex& c);
-	double randomDoubleInRange(double min, double max);
+	double randomDoubleInRange(double min, double max, unsigned int threadIndex);
+	int randomIntInRange(int min, int max, unsigned int threadIndex);
 	
 	public:
-		ValueProvider(Database* database, FractalParams& params);
+		ValueProvider(Database* database, FractalParams& params, unsigned int numberOfThreads);
 		~ValueProvider();
 		
-		Complex getNextValue(unsigned int index);
+		Complex getNextValue(unsigned int index, unsigned int threadIndex, bool isMandelbrot);
 		void lastValueSuccess(long long iterationCount);
 		void deleteSavedValues();
 		void reset(unsigned int index);

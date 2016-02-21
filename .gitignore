@@ -1,4 +1,6 @@
 *.bmp
 *.jpg
+*.png
 *.out
 *.ff
+.directory

@@ -18,7 +18,7 @@ class Fractal {
 
 	public:
 		Fractal(ValueProvider* valueProvider, const FractalParams& params);
-		void draw(double power);
+		void draw(double power, unsigned int numberOfThreads);
 };
 
 #endif

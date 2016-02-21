@@ -42,18 +42,25 @@ Complex Database::readNextEntryFromFile() {
 }
 
 bool Database::hasMoreElement() {
-	return iterator != points.end();
+	readIteratorMutex.lock(); // TODO: find a faster way
+	bool result = iterator != points.end();
+	readIteratorMutex.unlock();
+	return result;
 }
 
 Complex Database::getNextEntry(int offset) {
+	readIteratorMutex.lock(); // TODO: find a faster way
 	Complex result = *iterator;
 	moveIterator(offset);
+	readIteratorMutex.unlock();
 	return result;
 }
 
 void Database::writeEntry(const Complex& complex) {
 	if (points.find(complex) == points.end() && newPoints.find(complex) == newPoints.end()) {
+		writePointMutex.lock();
 		newPoints.insert(complex);
+		writePointMutex.unlock();
 	}
 }
 

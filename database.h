@@ -4,6 +4,7 @@
 #include <fstream>
 #include <unordered_set>
 #include <random>
+#include <mutex>
 #include "complex.h"
 
 namespace std {
@@ -18,6 +19,9 @@ namespace std {
 }
 
 class Database {
+	std::mutex readIteratorMutex;
+	std::mutex writePointMutex;
+	
 	std::fstream stream;
 	std::unordered_set<Complex> points;
 	std::unordered_set<Complex>::iterator iterator;

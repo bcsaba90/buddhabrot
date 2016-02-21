@@ -3,49 +3,72 @@
 #include <algorithm>
 
 const int MAX_NUMBER_OF_TRIES = 100;
+const int MINIMUM_ITERATION_COUNT_TO_CONSIDER_INTERESTING = 20;
 const int ITERATION_COUNT_NEEDED_FOR_SAVE = 1000;
 const double QUADRANT_SIZE = 0.01;
 const int MINIMUM_AMOUNT_OF_RANDOM_QUADRANT_BEFORE_USE = 10;
 
-ValueProvider::ValueProvider(Database* database, FractalParams& params_p) : params(params_p) {
+ValueProvider::ValueProvider(Database* database, FractalParams& params_p, unsigned int numberOfThreads) : params(params_p) {
 	this->database = database;
-  generator = new std::mt19937(randomDevice());
+	this->numberOfThreads = numberOfThreads;
+  std::random_device randomDevice;
+	generators = new std::mt19937*[numberOfThreads];
+	for (unsigned int i = 0; i < numberOfThreads; ++i) {
+		generators[i] = new std::mt19937(randomDevice());
+	}
+	
   randomDistribution = new std::uniform_real_distribution<double>(0.0, 1.0);
 }
 
 ValueProvider::~ValueProvider() {
+	for (unsigned int i = 0; i < numberOfThreads; ++i) {
+		delete generators[i];
+	}
+	delete[] generators;
+	for (IntCoordinate& coordinate : interestingQuadrants) {
+		std::cout << coordinate.x << ' ' << coordinate.y << std::endl;
+	}
 	std::cout << "interestingQuadrants: " << interestingQuadrants.size() << std::endl;
 }
 
-inline double ValueProvider::randomDoubleInRange(double min, double max) {
-	return NumericHelper::map((*randomDistribution)(*generator), 0.0, 1.0, min, max);
+inline double ValueProvider::randomDoubleInRange(double min, double max, unsigned int threadIndex) {
+	return NumericHelper::map((*randomDistribution)(*(generators[threadIndex])), 0.0, 1.0, min, max);
+}
+
+inline int ValueProvider::randomIntInRange(int min, int max, unsigned int threadIndex) {
+	return static_cast<int>(NumericHelper::map((*randomDistribution)(*(generators[threadIndex])), 0.0, 1.0, min, max));
 }
 
 bool ValueProvider::isSurelyPartOfMandelbrot(const Complex& c) {
+	bool partOfMandelbrot = false;
 	double q = (c.real - 1.0 / 4) * (c.real - 1.0 / 4) + c.imaginary * c.imaginary;
-	return q * (q + (c.real - 1.0 / 4)) < 1.0 / 4 * c.imaginary * c.imaginary;
+	partOfMandelbrot = (q * (q + (c.real - 1.0 / 4)) < 1.0 / 4 * c.imaginary * c.imaginary);
+	partOfMandelbrot = partOfMandelbrot || ((c.real + 1) * (c.real + 1) + c.imaginary * c.imaginary < 1.0 / 16);
+	return partOfMandelbrot;
 }
 
 
-Complex ValueProvider::chooseCoordinate() {
-	if ((double)rand() / RAND_MAX < params.randomChance && interestingQuadrants.size() > MINIMUM_AMOUNT_OF_RANDOM_QUADRANT_BEFORE_USE) {
-		IntCoordinate interestingQuadrantCoordinate = interestingQuadrants[rand() % interestingQuadrants.size()];
-		double real      = randomDoubleInRange(interestingQuadrantCoordinate.x * QUADRANT_SIZE, interestingQuadrantCoordinate.x * QUADRANT_SIZE + QUADRANT_SIZE);
-		double imaginary = randomDoubleInRange(interestingQuadrantCoordinate.y * QUADRANT_SIZE, interestingQuadrantCoordinate.y * QUADRANT_SIZE + QUADRANT_SIZE);
+Complex ValueProvider::chooseCoordinate(unsigned int threadIndex) {
+	double chanceToGetQuadrant = (double)randomDoubleInRange(0.0, 1.0, threadIndex);
+	int randomIndexInQuadrantVector = randomIntInRange(0, interestingQuadrants.size(), threadIndex);
+	if (chanceToGetQuadrant < params.randomChance && interestingQuadrants.size() > MINIMUM_AMOUNT_OF_RANDOM_QUADRANT_BEFORE_USE && !isWritingInterestingQuadrant) {
+		IntCoordinate interestingQuadrantCoordinate = interestingQuadrants[randomIndexInQuadrantVector];
+		double real      = randomDoubleInRange(interestingQuadrantCoordinate.x * QUADRANT_SIZE, interestingQuadrantCoordinate.x * QUADRANT_SIZE + QUADRANT_SIZE, threadIndex);
+		double imaginary = randomDoubleInRange(interestingQuadrantCoordinate.y * QUADRANT_SIZE, interestingQuadrantCoordinate.y * QUADRANT_SIZE + QUADRANT_SIZE, threadIndex);
 		return Complex(real, imaginary);
 	} else {
-		double real      = randomDoubleInRange(params.minX, params.maxX);
-		double imaginary = randomDoubleInRange(params.minY, params.maxY);
+		double real      = randomDoubleInRange(params.minX, params.maxX, threadIndex);
+		double imaginary = randomDoubleInRange(params.minY, params.maxY, threadIndex);
 		return Complex(real, imaginary);
 	}
 }
 
-Complex ValueProvider::getNextValue(unsigned int index) {
-	previousValue = getNextValueInternal(index);
+Complex ValueProvider::getNextValue(unsigned int index, unsigned int threadIndex, bool isMandelbrot) {
+	previousValue = getNextValueInternal(index, threadIndex, isMandelbrot);
 	return previousValue;
 }
 
-Complex ValueProvider::getNextValueInternal(unsigned int index) {
+Complex ValueProvider::getNextValueInternal(unsigned int index, unsigned int threadIndex, bool isMandelbrot) {
 	if (!readAllDataFromDatabase && !noDb) {
 		if (database->hasMoreElement()) {
 			return database->getNextEntry(index);
@@ -61,8 +84,8 @@ Complex ValueProvider::getNextValueInternal(unsigned int index) {
 	int j = 0;
 	Complex choosen;
 	while (j < MAX_NUMBER_OF_TRIES) {
-		choosen = chooseCoordinate();
-		if (!isSurelyPartOfMandelbrot(choosen)) {
+		choosen = chooseCoordinate(threadIndex);
+		if (!isMandelbrot || !isSurelyPartOfMandelbrot(choosen)) {
 			break;
 		}
 		++j;
@@ -79,10 +102,17 @@ void ValueProvider::lastValueSuccess(long long iterationCount) {
 	if (iterationCount > ITERATION_COUNT_NEEDED_FOR_SAVE && !noDb) {
 		database->writeEntry(previousValue);
 	}
-	if (iterationCount > iterationCountToConsiderInteresting) {
+	if (iterationCount > MINIMUM_ITERATION_COUNT_TO_CONSIDER_INTERESTING) {
 		IntCoordinate interestingQuadrant(floor(previousValue.getReal() / QUADRANT_SIZE), floor(previousValue.getImaginary() / QUADRANT_SIZE));
-		if (std::find(interestingQuadrants.begin(), interestingQuadrants.end(), interestingQuadrant) == interestingQuadrants.end()) {
-			interestingQuadrants.push_back(interestingQuadrant);
+		if (interestingQuadrantsSet.find(interestingQuadrant) == interestingQuadrantsSet.end()) {
+			writeInterestingQuadrantMutex.lock();
+			if (interestingQuadrantsSet.find(interestingQuadrant) == interestingQuadrantsSet.end()) {
+				isWritingInterestingQuadrant = true;
+				interestingQuadrants.push_back(interestingQuadrant);
+				isWritingInterestingQuadrant = false;
+				interestingQuadrantsSet.insert(interestingQuadrant);
+			}
+			writeInterestingQuadrantMutex.unlock();
 		}
 	}
 }
@@ -93,4 +123,5 @@ void ValueProvider::reset(unsigned int index) {
 
 void ValueProvider::deleteSavedValues() {
 	interestingQuadrants.clear();
+	interestingQuadrantsSet.clear();
 }
