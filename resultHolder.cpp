@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <algorithm>
  
-const unsigned int NUMBER_OF_TEMP_ARRAY_TO_INITIALIZE_ON_CREATION = 10;
+const unsigned int NUMBER_OF_TEMP_ARRAY_TO_INITIALIZE_ON_CREATION = 200;
 const unsigned int MAX_TIME_TO_WAIT_TO_RECHECK_TASK_LIST = 2000;
  
 ResultHolder::ResultHolder(FractalParams& fractalParams, unsigned int colorStepIndex) : params(fractalParams) {

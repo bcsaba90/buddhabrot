@@ -33,7 +33,7 @@ void FractalDrawerWorker::increaseValue(long long iterationCount, Complex* route
 
 void FractalDrawerWorker::increaseCountAndLogProgress(long long& countSinceLastLog) {
 	++countSinceLastLog;
-	if (countSinceLastLog > 10000L) {
+	if (countSinceLastLog > 50000L) {
 		progressIndicator.addNumberOfSamples(countSinceLastLog);
 		countSinceLastLog = 0L;
 	}
