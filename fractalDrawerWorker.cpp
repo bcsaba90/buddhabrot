@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-FractalDrawerWorker::FractalDrawerWorker(ResultHolder& resultHolder, WorkProvider& workProvider, ProgressIndicator& progressIndicator, ValueProvider& valueProvider, FractalParams& params, unsigned int threadIndex) : resultHolder(resultHolder), workProvider(workProvider), progressIndicator(progressIndicator), valueProvider(valueProvider), params(params) {
+FractalDrawerWorker::FractalDrawerWorker(ResultHolder& resultHolder, WorkProvider& workProvider, ProgressIndicator& progressIndicator, ValueProvider& valueProvider, FractalParams& params, unsigned int threadIndex) : params(params),resultHolder(resultHolder), workProvider(workProvider), progressIndicator(progressIndicator), valueProvider(valueProvider) {
 	this->threadIndex = threadIndex;
 }
 
@@ -26,12 +26,12 @@ void FractalDrawerWorker::waitUnitFinished() {
 	}
 }
 
-void FractalDrawerWorker::increaseValue(long long iterationCount, Complex* route, Complex& lastNumber) {
+inline void FractalDrawerWorker::increaseValue(long long iterationCount, Complex* route, Complex& lastNumber) noexcept {
 	resultHolder.addToResult(route, iterationCount);
 	valueProvider.lastValueSuccess(lastNumber, iterationCount);
 }
 
-void FractalDrawerWorker::increaseCountAndLogProgress(long long& countSinceLastLog) {
+inline void FractalDrawerWorker::increaseCountAndLogProgress(long long& countSinceLastLog) noexcept {
 	++countSinceLastLog;
 	if (countSinceLastLog > 50000L) {
 		progressIndicator.addNumberOfSamples(countSinceLastLog);
@@ -49,17 +49,17 @@ void FractalDrawerWorker::run() {
 		if (workUnit == nullptr) {
 			break;
 		}
-		unsigned int index = workUnit->index;
 		long long iterationLimit = workUnit->iterationLimit;
 		long long iterationCount = workUnit->iterationCount;
 		long long minIterationCount = workUnit->minIterationCount;
 		double power = workUnit->power;
+		unsigned int colorStepCount = params.colorStep.size();
 		// Note for the future: Ugly code duplication here. The for loops need to be in the ifs for optimal performance, but that means
 		// that many code needs duplication, even though only code inside the while loop needs to be different.
 		// Could be solved with macros or dynamic linking.
 		if (NumericHelper::equalsTo(power, 2)) {
 			for (long long i = 0; i < iterationCount && valueProvider.hasMoreValue(); ++i) {
-				c = valueProvider.getNextValue(params.colorStep.size(), threadIndex, true);
+				c = valueProvider.getNextValue(colorStepCount, threadIndex, true);
 				z.set(0,0);
 				long long k = 0;
 				while (k < iterationLimit && z.lengthSquared() <  4.0) {
@@ -78,7 +78,7 @@ void FractalDrawerWorker::run() {
 			}
 		} else if (NumericHelper::isIntegerNumber(power) && power >= 0) {
 			for (long long i = 0; i < iterationCount && valueProvider.hasMoreValue(); ++i) {
-				c = valueProvider.getNextValue(params.colorStep.size(), threadIndex, false);
+				c = valueProvider.getNextValue(colorStepCount, threadIndex, false);
 				z.set(0,0);
 				long long k = 0;
 				while (k < iterationLimit && z.lengthSquared() <  4.0) {
@@ -95,7 +95,7 @@ void FractalDrawerWorker::run() {
 			}
 		} else {
 			for (long long i = 0; i < iterationCount && valueProvider.hasMoreValue(); ++i) {
-				c = valueProvider.getNextValue(params.colorStep.size(), threadIndex, false);
+				c = valueProvider.getNextValue(colorStepCount, threadIndex, false);
 				z.set(0,0);
 				long long k = 0;
 				while (k < iterationLimit && z.lengthSquared() <  4.0) {
@@ -111,5 +111,5 @@ void FractalDrawerWorker::run() {
 			}
 		}
 	}
-	std::cout << "Thread " << threadIndex << " finished" << std::endl;
+	progressIndicator.markThreadFinished(threadIndex);
 }

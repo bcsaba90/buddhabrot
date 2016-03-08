@@ -7,7 +7,7 @@ Also check the help command line argument of the program for some more command l
 
 You can compile the program in any C++11 compatible compiler, here is an example in g++ on Linux:
 
-	g++ *.cpp -Wall -Ofast -ffast-math -std=c++11 -march=native
+	g++ *.cpp -Wall -Ofast -std=c++11 -march=native
 
 march and ffast-math might be platform-dependent, if you plan to use the program in different computer than you compiled it, you should leave those out.
 
@@ -16,4 +16,4 @@ march and ffast-math might be platform-dependent, if you plan to use the program
 
 This program is also able to create animation by changing the power (so generating the bbrot distribution of any any n-brot set). Under Linux (or bash running OS) you can convert the generated bmp images to a gif or an mp4 film using the useful_scripts/makevideo.sh. See help of makevideo.sh to see options.
 
-Multithreading is implemented by using C++11 threads.
+Multithreading is implemented using C++11 threads.

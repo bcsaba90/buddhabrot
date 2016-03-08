@@ -2,7 +2,7 @@
 #include <iomanip>
 #include <iostream>
 
-ProgressIndicator::ProgressIndicator(FractalParams& fractalParams) : params(fractalParams), count(0L) {
+ProgressIndicator::ProgressIndicator(FractalParams& fractalParams) : count(0L), params(fractalParams) {
 
 }
 
@@ -48,4 +48,8 @@ void ProgressIndicator::increaseColorStep() {
 	++currentColorStep;
 	count.store(0L);
 	lastPercent = 0.0;
+}
+
+void ProgressIndicator::markThreadFinished(unsigned int threadIndex) {
+	std::cout << "Thread " << threadIndex << " finished" << std::endl;
 }

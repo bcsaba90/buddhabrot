@@ -30,6 +30,9 @@ class ProgressIndicator {
 		void increaseColorStep();
 		
 		ProgressIndicator& operator=(const ProgressIndicator&) = delete;
+
+		void markThreadFinished(unsigned int threadIndex);
+		
 };
 
 #endif

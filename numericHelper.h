@@ -1,4 +1,7 @@
+#ifndef NUMERIC_HELPER_H
+#define NUMERIC_HELPER_H
 #include <cmath>
+#include <string>
 
 namespace NumericHelper {
 	const double DELTA = 0.00001;
@@ -25,3 +28,4 @@ namespace NumericHelper {
 		return fabs(numberToCheck - std::round(numberToCheck)) < DELTA;
 	}
 }
+#endif

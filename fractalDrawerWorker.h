@@ -18,8 +18,8 @@ class FractalDrawerWorker {
 	
 	bool isRunning = false;
 	
-	void increaseCountAndLogProgress(long long& countSinceLastLog);
-	void increaseValue(long long iterationCount, Complex* route, Complex& lastNumber);
+	void increaseCountAndLogProgress(long long& countSinceLastLog) noexcept;
+	void increaseValue(long long iterationCount, Complex* route, Complex& lastNumber) noexcept;
 	void run();
 	
 	public:

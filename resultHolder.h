@@ -1,6 +1,6 @@
 #ifndef RESULT_HOLDER_H
 #define RESULT_HOLDER_H
-#include <list>
+#include <vector>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
@@ -25,15 +25,17 @@ class ResultHolder {
 	std::thread* thread;
 	std::condition_variable taskAddedCondition;
 	std::mutex taskAddedMutex;
+	std::condition_variable taskRemovedCondition;
+	std::mutex taskRemovedMutex;
 	
 	bool isRunning;
 	long long iterationLimit;
 	FractalParams& params;
 	int** result;
 	
-	std::list<Complex*> ownedSpaces;
-	std::list<Complex*> freeSpaces;
-	std::list<ResultTempElement> usedSpaces;
+	std::vector<Complex*> ownedSpaces;
+	std::vector<Complex*> freeSpaces;
+	std::vector<ResultTempElement> usedSpaces;
 	
 	void stopThread();
 

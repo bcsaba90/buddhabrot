@@ -14,7 +14,6 @@ WorkProvider::WorkProvider(FractalParams& params, unsigned int colorStepIndex, l
 		workUnits[j]->minIterationCount = params.colorStep[colorStepIndex].minIterationCount;
 		workUnits[j]->power = power;
 	}
-	std::cout << "numberOfWorkUnits: " << numberOfWorkUnits << std::endl;
 	currentWorkUnitIndex = 0;
 }
 

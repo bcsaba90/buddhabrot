@@ -71,7 +71,6 @@ int main(int argc, char** argv) {
 			valueProvider->setNoDb(true);
 		}
 		for (double d = params.startPower; d <= params.endPower; d+= params.increment) {
-			std::cout << "Power: " << d << std::endl;
 			valueProvider->deleteSavedValues();
 			Fractal fractal(valueProvider, params);
 			fractal.draw(d, numberOfThreads);
@@ -79,7 +78,7 @@ int main(int argc, char** argv) {
 		delete database;
 		delete valueProvider;
 	} catch(const GeneralException& ex) {
-		std::cout << ex.what() << std::endl;
+		std::cout << "Exception occured: " << ex.what() << std::endl;
 		return -1;
 	}
 	return 0;

@@ -5,6 +5,7 @@
  
 const unsigned int NUMBER_OF_TEMP_ARRAY_TO_INITIALIZE_ON_CREATION = 200;
 const unsigned int MAX_TIME_TO_WAIT_TO_RECHECK_TASK_LIST = 2000;
+const unsigned int MAX_NUMBER_OF_ENTRIES = 4000;
  
 ResultHolder::ResultHolder(FractalParams& fractalParams, unsigned int colorStepIndex) : params(fractalParams) {
 	 this->iterationLimit = fractalParams.colorStep[colorStepIndex].iterationLimit;
@@ -34,7 +35,6 @@ ResultHolder::~ResultHolder() {
 		delete[] result[i];
 	}
 	delete[] result;
-	std::cout << "Deleted resultHolder" << std::endl;
 }
 
 void ResultHolder::initialize() {
@@ -45,8 +45,7 @@ void ResultHolder::initialize() {
 void ResultHolder::run() {
 	while (isRunning) {
 		ResultTempElement resultToProcess = getResultToProcess();
-		
-		for (int l = 0; l < resultToProcess.size; ++l) {
+		for (unsigned int l = 0; l < resultToProcess.size; ++l) {
 			Complex& complex = resultToProcess.result[l];
 			int x = NumericHelper::map(complex.getReal(), params.minX, params.maxX, 0, params.width);
 			int y = NumericHelper::map(complex.getImaginary(), params.minY, params.maxY, 0, params.height);
@@ -54,32 +53,42 @@ void ResultHolder::run() {
 				++result[y][x];
 			}
 		}
+		taskRemovedCondition.notify_all();
 		
 		freeSpacesAccessMutex.lock();
-		freeSpaces.push_front(resultToProcess.result);
+		freeSpaces.push_back(resultToProcess.result);
 		freeSpacesAccessMutex.unlock();
 	}
 }
 
 Complex* ResultHolder::getTempResult() {
 	Complex* result = nullptr;
-	freeSpacesAccessMutex.lock();
-	if (freeSpaces.size() > 0) {
-		result = freeSpaces.front();
-		freeSpaces.pop_front();
-	} else {
-		result = new Complex[iterationLimit];
-		ownedSpaces.push_back(result);
+	while (result == nullptr) {
+		freeSpacesAccessMutex.lock();
+		if (freeSpaces.size() > 0) {
+			result = freeSpaces.back();
+			freeSpaces.pop_back();
+		} else if (ownedSpaces.size() < MAX_NUMBER_OF_ENTRIES) {
+			result = new Complex[iterationLimit];
+			ownedSpaces.push_back(result);
+		}
+		freeSpacesAccessMutex.unlock();
+		
+		// make sure that if this thread does not get enough time, wait instead of fill up
+		// the entire memory
+		if (result == nullptr) {
+			std::unique_lock<std::mutex> lock(taskRemovedMutex);
+			taskRemovedCondition.wait_for(lock, std::chrono::milliseconds(MAX_TIME_TO_WAIT_TO_RECHECK_TASK_LIST));
+		}
 	}
-	freeSpacesAccessMutex.unlock();
 	return result;
 }
 
 void ResultHolder::addToResult(Complex* listToAdd, long long size) {
-	auto iteratorToOwnedSpace = std::find(ownedSpaces.begin(), ownedSpaces.end(), listToAdd);
-	assert(iteratorToOwnedSpace != ownedSpaces.end());
+	//auto iteratorToOwnedSpace = std::find(ownedSpaces.begin(), ownedSpaces.end(), listToAdd);
+	//assert(iteratorToOwnedSpace != ownedSpaces.end());
 	usedSpacesAccessMutex.lock();
-	usedSpaces.push_back(ResultTempElement(listToAdd, size));
+	usedSpaces.emplace_back(listToAdd, size);
 	taskAddedCondition.notify_all();
 	usedSpacesAccessMutex.unlock();
 }
@@ -94,8 +103,8 @@ ResultTempElement ResultHolder::getResultToProcess() {
 		} else {
 			usedSpacesAccessMutex.lock();
 			if (usedSpaces.size() > 0) {
-				result = usedSpaces.front();
-				usedSpaces.pop_front();
+				result = usedSpaces.back();
+				usedSpaces.pop_back();
 				hasResult = true;
 			}
 			usedSpacesAccessMutex.unlock();
