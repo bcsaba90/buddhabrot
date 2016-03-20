@@ -10,7 +10,7 @@ filename = buddhabrot						# Filename, current seconds will be appended, bmp wil
 random_chance = 0.05
 # color_effect | iteration_limit | color_multiplier | iteration_count | min_iteration
 colorStep {
-	(0.9, 0.9, 0.9) | 30000    | 3   | 10000000 | 2000
-	(0.9, 0.9, 0.3) | 3000     | 2.5 | 10000000 | 200
-	(0.9, 0.1, 0.1) | 300      | 2   | 10000000 | 0
+	(0.9, 0.9, 0.9) | 30000    | 3.2 | 10000000 | 2000
+	(0.9, 0.9, 0.3) | 3000     | 2.8 | 10000000 | 200
+	(0.9, 0.1, 0.1) | 300      | 2.4 | 10000000 | 0
 }

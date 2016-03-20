@@ -17,3 +17,5 @@ march and ffast-math might be platform-dependent, if you plan to use the program
 This program is also able to create animation by changing the power (so generating the bbrot distribution of any any n-brot set). Under Linux (or bash running OS) you can convert the generated bmp images to a gif or an mp4 film using the useful_scripts/makevideo.sh. See help of makevideo.sh to see options.
 
 Multithreading is implemented using C++11 threads.
+
+Output format is BMP, larger than 2GB outputs are separated to several smaller than 2GB files.

@@ -74,7 +74,7 @@ void Fractal::draw(double power, unsigned int numberOfThreads) {
 		}
 	}
 	std::stringstream ss;
-	ss << params.fileName << "_" <<  std::fixed << std::setprecision(NUMBER_OF_DIGITS_OF_POWER_IN_FILENAME) << power << "_" << time(NULL) << ".bmp";
+	ss << params.fileName << "_" <<  std::fixed << std::setprecision(NUMBER_OF_DIGITS_OF_POWER_IN_FILENAME) << power << "_" << time(NULL);
 	bmpImage.save(ss.str());
 	std::cout << "Saved fractal to file " << ss.str() << std::endl;
 }
