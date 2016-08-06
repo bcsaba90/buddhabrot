@@ -45,13 +45,14 @@ void Fractal::addToBmp(int** image, Bmp& bmpImage, const Vector& multiplier, dou
 	}
 }
 
-void Fractal::draw(double power, unsigned int numberOfThreads) {
+void Fractal::draw(double power, unsigned int numberOfThreads, bool saveTemporaryResult) {
 	Bmp bmpImage(params.width, params.height);
 	bmpImage.fill(Pixel(0,0,0));
+	std::cout << "Filled BMP" << std::endl;
 	for (unsigned int i = 0; i < params.colorStep.size(); ++i) {
 		valueProvider->reset(i);
 		ResultHolder resultHolder(params, i);
-		WorkProvider workProvider(params, i, WORK_SIZE, power);
+		WorkProvider workProvider(params, i, WORK_SIZE, power, saveTemporaryResult);
 		ProgressIndicator progressIndicator(params);
 		
 		progressIndicator.initialize();

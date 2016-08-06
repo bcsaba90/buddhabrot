@@ -5,12 +5,12 @@ min_x   = -2.1									# Minimum real value, default -2
 max_x   = 1.1										# Maximum real value, default 2
 min_y   = -1.2									# Minimum imaginary value, default -1.8
 max_y   = 1.2										# Maximum imaginary value, default 1.8
-filename = vanim							# Filename, current seconds will be appended, bmp will be generated, default buddhabrot
+filename = ianim							# Filename, current seconds will be appended, bmp will be generated, default buddhabrot
 random_chance = 0.8
-startPower=1.0
-endPower=8.0
-increment=0.002
+startPower=33.0
+endPower=100.0
+increment=1.0
 # color_effect | iteration_limit | color_multiplier | iteration_count | min_iteration
 colorStep {
-	(0.2, 0.5, 0.2) | 2000     | 1.5 | 100000000 | 40
+	(0.2, 0.5, 0.2) | 2000     | 1.5 | 60000000 | 40
 }

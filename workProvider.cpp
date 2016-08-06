@@ -1,8 +1,9 @@
 #include "workProvider.h"
 #include <cmath>
 
-WorkProvider::WorkProvider(FractalParams& params, unsigned int colorStepIndex, long long workUnitSize, double power) {
+WorkProvider::WorkProvider(FractalParams& params, unsigned int colorStepIndex, long long workUnitSize, double power, bool saveTemporaryResult) {
 	numberOfWorkUnits = (int)ceil((double)params.colorStep[colorStepIndex].iterationCount / workUnitSize);
+	std::cout << "WorkUnits: " << numberOfWorkUnits << std::endl;
 	workUnits = new WorkUnit*[numberOfWorkUnits];
 	ColorStep& colorStep = params.colorStep[colorStepIndex];
 	for (long long i = 0, j = 0; i < colorStep.iterationCount && j < numberOfWorkUnits; i += workUnitSize, ++j) {
@@ -13,6 +14,7 @@ WorkProvider::WorkProvider(FractalParams& params, unsigned int colorStepIndex, l
 		workUnits[j]->iterationCount = (i + workUnitSize < iterationCount ? workUnitSize : iterationCount - i);
 		workUnits[j]->minIterationCount = params.colorStep[colorStepIndex].minIterationCount;
 		workUnits[j]->power = power;
+		workUnits[j]->saveTemporaryResult = saveTemporaryResult;
 	}
 	currentWorkUnitIndex = 0;
 }

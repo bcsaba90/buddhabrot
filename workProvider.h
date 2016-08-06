@@ -9,6 +9,7 @@ struct WorkUnit {
 	long long iterationCount;
 	long long minIterationCount;
 	double power;
+	bool saveTemporaryResult = true;
 };
 
 class WorkProvider {
@@ -17,7 +18,7 @@ class WorkProvider {
 	int currentWorkUnitIndex;
 	WorkUnit** workUnits;
 	public:
-		WorkProvider(FractalParams& params, unsigned int colorStepIndex, long long workUnitSize, double power);
+		WorkProvider(FractalParams& params, unsigned int colorStepIndex, long long workUnitSize, double power, bool saveTemporaryResult);
 		~WorkProvider();
 		
 		WorkUnit* getWorkUnit();

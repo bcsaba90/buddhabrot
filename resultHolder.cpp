@@ -3,9 +3,9 @@
 #include <assert.h>
 #include <algorithm>
  
-const unsigned int NUMBER_OF_TEMP_ARRAY_TO_INITIALIZE_ON_CREATION = 200;
+const unsigned int NUMBER_OF_TEMP_ARRAY_TO_INITIALIZE_ON_CREATION = 4;
 const unsigned int MAX_TIME_TO_WAIT_TO_RECHECK_TASK_LIST = 2000;
-const unsigned int MAX_NUMBER_OF_ENTRIES = 4000;
+const unsigned int MAX_NUMBER_OF_ENTRIES = 10;
  
 ResultHolder::ResultHolder(FractalParams& fractalParams, unsigned int colorStepIndex) : params(fractalParams) {
 	 this->iterationLimit = fractalParams.colorStep[colorStepIndex].iterationLimit;

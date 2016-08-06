@@ -62,14 +62,28 @@ void FractalDrawerWorker::run() {
 				c = valueProvider.getNextValue(colorStepCount, threadIndex, true);
 				z.set(0,0);
 				long long k = 0;
-				while (k < iterationLimit && z.lengthSquared() <  4.0) {
-					double newReal = z.real * z.real - z.imaginary * z.imaginary + c.real;
-					double newImaginary = z.real * z.imaginary + z.imaginary * z.real + c.imaginary;
-					z.real = newReal;
-					z.imaginary = newImaginary;
-					route[k].set(z);
-					++k;
+				if (!workUnit->saveTemporaryResult) {
+					while (k < iterationLimit && z.lengthSquared() <  4.0) {
+						double newReal = z.real * z.real - z.imaginary * z.imaginary + c.real;
+						double newImaginary = z.real * z.imaginary + z.imaginary * z.real + c.imaginary;
+						z.real = newReal;
+						z.imaginary = newImaginary;
+						++k;
+					}
 				}
+				if (workUnit->saveTemporaryResult || (k < iterationLimit && k > minIterationCount)) {
+					k = 0;
+					z.set(0,0);
+					while (k < iterationLimit && z.lengthSquared() <  4.0) {
+						double newReal = z.real * z.real - z.imaginary * z.imaginary + c.real;
+						double newImaginary = z.real * z.imaginary + z.imaginary * z.real + c.imaginary;
+						z.real = newReal;
+						z.imaginary = newImaginary;
+						route[k].set(z);
+						++k;
+					}
+				}
+
 				if (k < iterationLimit && k > minIterationCount) {
 					increaseValue(k, route, c);
 					route = resultHolder.getTempResult();

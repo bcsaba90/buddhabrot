@@ -20,6 +20,7 @@ std::vector<Argument> createArguments() {
 	arguments.push_back(Argument('d', "databasefile", "Name of the db file to use, defaults to point.ff", STRING_ARGUMENT));
 	arguments.push_back(Argument('o', "onlyfromdb", "Limit the amount of samples to the same as points in the database", BOOLEAN_ARGUMENT));
 	arguments.push_back(Argument('b', "nodb", "Don't read or write to db", BOOLEAN_ARGUMENT));
+	arguments.push_back(Argument('s', "skipSaveTemporaryResult", "Skips saving tmp result (only for n=2)", BOOLEAN_ARGUMENT));
 	arguments.push_back(Argument('i', "interesting-iteration-count", "Iteration count to consider interesting, defaults to 100", INTEGER_ARGUMENT));
 	arguments.push_back(Argument('t', "threads", "Number of threads, defaults to core count", INTEGER_ARGUMENT));
 	return arguments;
@@ -56,6 +57,7 @@ int main(int argc, char** argv) {
 			hardwareConcurrency = 1;
 		}
 		int numberOfThreads = argumentParser.getIntArgumentOrReturnDefault('t', hardwareConcurrency);
+		bool saveTemporaryResult = !argumentParser.isArgumentPresent('s');
 		std::cout << "Number of threads: " << numberOfThreads << std::endl;
 		if (argumentParser.isArgumentPresent('b')) {
 			database = new Database();
@@ -73,7 +75,7 @@ int main(int argc, char** argv) {
 		for (double d = params.startPower; d <= params.endPower; d+= params.increment) {
 			valueProvider->deleteSavedValues();
 			Fractal fractal(valueProvider, params);
-			fractal.draw(d, numberOfThreads);
+			fractal.draw(d, numberOfThreads, saveTemporaryResult);
 		}
 		delete database;
 		delete valueProvider;
